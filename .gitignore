@@ -1,0 +1,27 @@
+*.py[cod]
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+develop-eggs
+.installed.cfg
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+#Translations
+*.mo
+# Ex
+tra files
+.DS_Store
+*~
+*-
+\#*
+\.\#*
+*.orig
+*.log
+*.sql
