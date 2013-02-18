@@ -75,7 +75,7 @@ def listen():
             # Ignore any other output that doesn't have a target
             continue
         destination = data['target'].lower().rstrip()
-        if not destination in config:
+        if not destination in config['targets']:
             # Inform that we received an unknown target
             puts(colored.red("Target %s not found" % destination))
         puts(colored.yellow("Instructions received."))
