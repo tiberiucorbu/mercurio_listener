@@ -60,14 +60,14 @@ def listen():
         puts(colored.red('ERROR: port missing in ``mercurio.cfg`` file. '
                          'Try running ``python -m serial.tools.list_ports``'
                          ' to figure out the port of the device.'))
-        exit(0)
+        exit(2)
     port = config['port']
     try:
         serial = Serial(port, 9600, timeout=TIMEOUT)
     except serialutil.SerialException:
         puts(colored.red('ERROR: Mercurio device '
                          'not connected nor detected.'))
-        exit(0)
+        exit(1)
     puts(colored.yellow('Mercurio is listening on %s.' % serial.portstr))
     while True:
         data = _dict_from_readline(serial.readline())
