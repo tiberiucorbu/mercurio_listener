@@ -6,7 +6,7 @@ Mercurio is a set of components designed to run commands in a host. Also known a
 The aim of Mercurio is to transmit a message to the host. The other component required to do this is the Mercurio box.
 
 
-Mercurio Lsistener
+Mercurio Listener
 -----------------
 
 Python listener on the serial port that translates the slugs passed into commands in the host machine.
