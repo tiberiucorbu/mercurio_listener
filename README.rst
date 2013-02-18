@@ -1,12 +1,12 @@
 Mercurio
 ========
 
-Mercurio is a set of components to run commands in a host. Also known as the deployment machine. It is designed to be plugglable, so you can run whatever you want to in the host.
+Mercurio is a set of components designed to run commands in a host. Also known as the deployment machine. It is designed to be pluggable, so you can run arbitrary commands in the host.
 
 The aim of Mercurio is to transmit a message to the host. The other component required to do this is the Mercurio box.
 
 
-Mercurio listener
+Mercurio Lsistener
 -----------------
 
 Python listener on the serial port that translates the slugs passed into commands in the host machine.
