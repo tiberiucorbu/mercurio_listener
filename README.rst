@@ -26,7 +26,7 @@ Configuration
 
 The most important value in the configuration is the ``port`` where the ``mercurio box`` is attached.
 
-This can be determined by running, after the ``mercurio listener`` has been installed:
+This can be determined by running, after the ``mercurio listener`` has been installed::
 
     python -m serial.tools.list_ports
 
@@ -38,7 +38,7 @@ The box by default will only send four possible targets:
 
 These settings must be expressed in a ``mercurio.cfg`` file, located where the listener is run.
 
-e.g.
+e.g.::
 
     [general]
     # Use python -m serial.tools.list_ports`` to determine it.
