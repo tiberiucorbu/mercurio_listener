@@ -30,11 +30,17 @@ This can be determined by running, after the ``mercurio listener`` has been inst
 
     python -m serial.tools.list_ports
 
-The box by default will only send four possible targets:
+The box by default will send possible targets:
 
 * ``Test`` - Used to run the tests of the application.
 * ``Staging`` - Used to deploy to the staging environment.
 * ``Production`` - Used to deploy to the producton environment.
+
+But also sensors readings when their state change
+
+* ``Button`` - The toggle switch has changed it's state form on to off or the other way around 
+* ``Temperature`` - Temperature reading 
+* ``Touch`` - Temperature reading 
 
 These settings must be expressed in a ``mercurio.cfg`` file, located where the listener is run.
 
@@ -54,7 +60,7 @@ Please note that at the moment the functionality of the host scripts that it can
 
 
 Start the listener
-------------------
+-----------------
 
 The listener can be run with the following command::
 
