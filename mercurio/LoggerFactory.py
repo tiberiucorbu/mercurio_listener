@@ -1,6 +1,6 @@
 import os
 import logging 
-from mercurio.ConfigParam import ConfigParam  
+from mercurio.ConfigurationResolver import ConfigurationResolver 
 
 
 '''
@@ -10,14 +10,14 @@ Created on Jul 28, 2013
 '''
 
 
-class Logger():
+class LoggerFactory():
     
-    LOG_CONFIGURATION_FILE='logging.cfg'
+    LOG_CONFIGURATION_FILE='etc/logging.cfg'
     FILESYS = 'filesystem'
     LOGGING_DIR = 'loggingDir'
     
     def __init__(self, name):
-        config = ConfigParam(self.LOG_CONFIGURATION_FILE)
+        config = ConfigurationResolver(self.LOG_CONFIGURATION_FILE)
         name = name.replace('.log','')
         logger = logging.getLogger('log_namespace.%s' % name)    # log_namespace can be replaced with your namespace 
         logger.setLevel(logging.DEBUG)

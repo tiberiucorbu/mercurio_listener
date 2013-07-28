@@ -7,51 +7,52 @@ Created on Jul 27, 2013
 @author: Tiberiu
 '''  
 
-'''
-RegEx used to extract an exact comparison. Matches any number
-''' 
-NUM_RANGE_EXACT_COMPARE = r'(\d+)'
-'''
-RegEx used to extract between comparison. Matches: 100-200
-'''
-NUM_RANGE_BETWEEN_COMPARE = r'(\d+)[-]{1}(\d+)'
-'''
-RegEx used to extract a  left side compare. Matches: 100>, 100>=, 100<, 100<=
-'''
-NUM_RANGE_LEFT_COMPARE = r'(\d+)([=]?[<>]{1})'
-'''
-RegEx used to extract right side compare. Matches: >100, >=100, <100, <=100
-'''
-NUM_RANGE_RIGHT_COMPARE = r'([<>]{1}[=]?)(\d+)'  
-'''
-Mapping between the regex matcher and the meaning of it's groups.
-Answers to which group represents the operator and
-where to place the value to be matched, on the left or right side.
-
-Relyes on the index of each mapping array: index 0 is left value group num.,
-index 1 is the operator group num. and index 2 is the right value group num.
-
-'-1' means no group 
-'''
-MAPPING = {
-           NUM_RANGE_EXACT_COMPARE: [1, -1, -1],
-           NUM_RANGE_BETWEEN_COMPARE: [1, -1, 2],
-           NUM_RANGE_LEFT_COMPARE: [1, 2, -1],
-           NUM_RANGE_RIGHT_COMPARE: [-1, 1, 2]
-           }  
-'''
-A mapping between the literal operator and it's algoritmic meaning, the keys are kept in a technical educated form 
-but could be changed to some 'business' values like: 'greater than' instead of '>'
-'''
-COMPARATIONS = {
-                'between':(lambda x, y, value: value >= x and value <= y), 
-                '>': (lambda x, y: x > y), 
-                '<': (lambda x, y: x < y), 
-                '>=': (lambda x, y: x >= y), 
-                '<=': (lambda x, y: x <= y)
-                }
-
 class RangeStatement:
+        
+    '''
+    RegEx used to extract an exact comparison. Matches any number
+    ''' 
+    NUM_RANGE_EXACT_COMPARE = r'(\d+)'
+    '''
+    RegEx used to extract between comparison. Matches: 100-200
+    '''
+    NUM_RANGE_BETWEEN_COMPARE = r'(\d+)[-]{1}(\d+)'
+    '''
+    RegEx used to extract a  left side compare. Matches: 100>, 100>=, 100<, 100<=
+    '''
+    NUM_RANGE_LEFT_COMPARE = r'(\d+)([=]?[<>]{1})'
+    '''
+    RegEx used to extract right side compare. Matches: >100, >=100, <100, <=100
+    '''
+    NUM_RANGE_RIGHT_COMPARE = r'([<>]{1}[=]?)(\d+)'  
+    '''
+    Mapping between the regex matcher and the meaning of it's groups.
+    Answers to which group represents the operator and
+    where to place the value to be matched, on the left or right side.
+    
+    Relyes on the index of each mapping array: index 0 is left value group num.,
+    index 1 is the operator group num. and index 2 is the right value group num.
+    
+    '-1' means no group 
+    '''
+    MAPPING = {
+               NUM_RANGE_EXACT_COMPARE: [1, -1, -1],
+               NUM_RANGE_BETWEEN_COMPARE: [1, -1, 2],
+               NUM_RANGE_LEFT_COMPARE: [1, 2, -1],
+               NUM_RANGE_RIGHT_COMPARE: [-1, 1, 2]
+               }  
+    '''
+    A mapping between the literal operator and it's algoritmic meaning, the keys are kept in a technical educated form 
+    but could be changed to some 'business' values like: 'greater than' instead of '>'
+    '''
+    COMPARATIONS = {
+                    'between':(lambda x, y, value: value >= x and value <= y), 
+                    '>': (lambda x, y: x > y), 
+                    '<': (lambda x, y: x < y), 
+                    '>=': (lambda x, y: x >= y), 
+                    '<=': (lambda x, y: x <= y)
+                    }
+
     '''
     RangeStatement - Creates a range statement useful to check if a number is in a defined range, 
     like an check of the following form: is 100 bigger than 1000 ? 
@@ -66,10 +67,10 @@ class RangeStatement:
         
     
     def parseRange(self, rangeString):
-        for x in [NUM_RANGE_BETWEEN_COMPARE, NUM_RANGE_LEFT_COMPARE, NUM_RANGE_RIGHT_COMPARE, NUM_RANGE_EXACT_COMPARE]:
+        for x in [self.NUM_RANGE_BETWEEN_COMPARE, self.NUM_RANGE_LEFT_COMPARE, self.NUM_RANGE_RIGHT_COMPARE, self.NUM_RANGE_EXACT_COMPARE]:
             y = self.match(x, rangeString) 
             if y:
-                m = MAPPING[x]
+                m = self.MAPPING[x]
                 left = self.getRangeValue(y, m[0]);
                 operator = self.getRangeValue(y, m[1])
                 right = self.getRangeValue(y, m[2])
@@ -105,8 +106,8 @@ class RangeStatement:
         return retVal
     
     def rightOrLeftCompare(self, x):
-        if COMPARATIONS[self.operator]:
-            func = COMPARATIONS[self.operator]
+        if self.COMPARATIONS[self.operator]:
+            func = self.COMPARATIONS[self.operator]
             if self.right is None :
                 return func(self.left, x)
             else :
@@ -120,7 +121,7 @@ class RangeStatement:
         else :
             if self.debug:
                 print 'Between Comparison - compare value is :', x , ', matcher value on the right side is ', self.right, ' and on left side is ', self.left
-            return COMPARATIONS['between'](self.left, self.right, x) or COMPARATIONS['between'](self.right, self.left, x)
+            return self.COMPARATIONS['between'](self.left, self.right, x) or self.COMPARATIONS['between'](self.right, self.left, x)
 
 
 class NumberRange:

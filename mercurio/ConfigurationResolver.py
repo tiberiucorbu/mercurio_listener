@@ -8,7 +8,7 @@ Created on Jul 28, 2013
 '''
 
 
-class ConfigParam:
+class ConfigurationResolver:
     def __init__(self, configFile):
         self._readConfigFile(configFile)
         

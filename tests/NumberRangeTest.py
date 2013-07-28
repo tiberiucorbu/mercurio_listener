@@ -4,14 +4,14 @@ Created on Jul 21, 2013
 @author: Tiberiu
 '''
 import unittest
-from mercurio import number_range
+from mercurio.NumberRange import NumberRange
 
 
 class Test(unittest.TestCase):
 
     def testRangeExactMatch(self):
         print 'test range - exact match.'
-        res = number_range.NumberRange('100, 80, 82');
+        res = NumberRange('100, 80, 82');
         self.assertTrue(res.contains(100), 'not expected')
 
         self.assertTrue(res.contains(100), 'not expected')
@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
     
     def testRangeBetweenMatch(self):
         print 'test interval ends defined, '
-        res = number_range.NumberRange('100-80, 200-300');
+        res = NumberRange('100-80, 200-300');
         self.assertTrue(res.contains(100), 'not expected')
         self.assertFalse(res.contains(79), 'not expected')
         self.assertTrue(res.contains(250), 'not expected')
@@ -30,7 +30,7 @@ class Test(unittest.TestCase):
     
     def testLeftRightExclusiveMatch(self):
         print 'test left and right match.'
-        res = number_range.NumberRange('80>, >100');
+        res = NumberRange('80>, >100');
         self.assertTrue(res.contains(101), 'not expected')
         self.assertTrue(res.contains(70), 'not expected')
         self.assertFalse(res.contains(90), 'not expected')

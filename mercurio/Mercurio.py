@@ -1,6 +1,6 @@
 import subprocess
-from mercurio.ConfigParam import ConfigParam
-from mercurio.Logger import Logger
+from mercurio.ConfigurationResolver import ConfigurationResolver
+from mercurio.LoggerFactory import LoggerFactory
 from datetime import datetime
 from serial import Serial, serialutil
 
@@ -8,12 +8,12 @@ from serial import Serial, serialutil
 class Mercurio():
     
     TIMEOUT = 1
-    MERCURIO_CONFIG_NAME = 'mercurio.cfg'
+    CONFIG_FILE = 'etc/mercurio.cfg'
      
     def __init__(self):
-        self.log = Logger("mercurio").get() 
+        self.log = LoggerFactory("mercurio").get() 
         
-    def _dict_from_readline(self, line):
+    def _dictionareFromReadline(self, line):
         """Creates a dictionary from the raw input from the serial.
         e.g.
     
@@ -38,13 +38,13 @@ class Mercurio():
     
     
     
-    def _prepare_command(self, command):
+    def _prepareCommand(self, command):
         """Prepares a single command to be executed by a subprocess"""
         return command.split(' ')
     
     
     def listen(self):
-        configuration = ConfigParam(self.MERCURIO_CONFIG_NAME)
+        configuration = ConfigurationResolver(self.CONFIG_FILE)
         port = configuration.get('general','port')
         if port is None:
             self.log.critical('ERROR: port missing in ``mercurio.cfg`` file. '
@@ -61,7 +61,7 @@ class Mercurio():
         self.log.info('Mercurio is listening on %s.' % serial.portstr)
         targets = configuration.listItems('targets')
         while True:
-            data = self._dict_from_readline(serial.readline())
+            data = self._dictionareFromReadline(serial.readline())
             if not 'target' in data:
                 # Ignore any other output that doesn't have a target
                 continue
@@ -71,7 +71,7 @@ class Mercurio():
                 self.log.warn("Target %s not found" % destination)
             self.log.info("Instructions received.")
             
-            command_args = self._prepare_command(targets[destination])
+            command_args = self._prepareCommand(targets[destination])
             self.log.info("Mercurio delivering to target: %s" % destination.title())
             self.log.info(targets[destination])
             # ``subprocess.call`` will wait for the command to complete.
