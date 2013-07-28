@@ -23,11 +23,15 @@ class LoggerFactory():
         logger.setLevel(logging.DEBUG)
         if not logger.handlers:
             file_name = os.path.join(config.get(self.FILESYS,self.LOGGING_DIR), '%s.log' % name)    # usually I keep the LOGGING_DIR defined in some global settings file
-            handler = logging.FileHandler(file_name)
-            formatter = logging.Formatter('%(asctime)s %(levelname)s:%(name)s %(message)s')
-            handler.setFormatter(formatter)
-            handler.setLevel(logging.DEBUG)
-            logger.addHandler(handler)
+            consoleHandler = logging.StreamHandler()
+            fileHandler = logging.FileHandler(file_name)
+            formatter = logging.Formatter('%(asctime)s %(levelname)s:%(filename)s - %(module)s %(funcName)s %(message)s')
+            consoleHandler.setLevel(logging.DEBUG)
+            consoleHandler.setFormatter(formatter)
+            fileHandler.setFormatter(formatter)
+            fileHandler.setLevel(logging.DEBUG)
+            logger.addHandler(fileHandler)
+            logger.addHandler(consoleHandler)
         self._logger = logger
 
     def get(self):

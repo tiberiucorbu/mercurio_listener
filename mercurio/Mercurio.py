@@ -8,7 +8,7 @@ from serial import Serial, serialutil
 class Mercurio():
     
     TIMEOUT = 1
-    CONFIG_FILE = 'etc/mercurio.cfg'
+    CONFIG_FILE = 'etc/setup.cfg'
      
     def __init__(self):
         self.log = LoggerFactory("mercurio").get() 
