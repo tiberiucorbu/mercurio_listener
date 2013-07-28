@@ -16,23 +16,41 @@ class LoggerFactory():
     FILESYS = 'filesystem'
     LOGGING_DIR = 'loggingDir'
     
-    def __init__(self, name):
-        config = ConfigurationResolver(self.LOG_CONFIGURATION_FILE)
+
+
+
+    def __init__(self, name="mercurio"):
+        self.config = ConfigurationResolver(self.LOG_CONFIGURATION_FILE)
         name = name.replace('.log','')
         logger = logging.getLogger('log_namespace.%s' % name)    # log_namespace can be replaced with your namespace 
         logger.setLevel(logging.DEBUG)
         if not logger.handlers:
-            file_name = os.path.join(config.get(self.FILESYS,self.LOGGING_DIR), '%s.log' % name)    # usually I keep the LOGGING_DIR defined in some global settings file
-            consoleHandler = logging.StreamHandler()
-            fileHandler = logging.FileHandler(file_name)
+            
             formatter = logging.Formatter('%(asctime)s %(levelname)s:%(filename)s - %(module)s %(funcName)s %(message)s')
-            consoleHandler.setLevel(logging.DEBUG)
-            consoleHandler.setFormatter(formatter)
-            fileHandler.setFormatter(formatter)
-            fileHandler.setLevel(logging.DEBUG)
-            logger.addHandler(fileHandler)
-            logger.addHandler(consoleHandler)
+            if self.config.getBoolean('handlers', 'console'):
+                self.addConsoleHandler(logger, formatter)
+            if self.config.getBoolean('handlers', 'file'):
+                self.addFileHandler(name, logger, formatter)
+            
         self._logger = logger
+    
 
+    def getLoggerLevel(self):
+        return logging._levelNames.get(self.config.get('prop', 'logLevel'))
+
+    def addConsoleHandler(self, logger, formatter):
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setLevel(self.getLoggerLevel())
+        consoleHandler.setFormatter(formatter)
+        logger.addHandler(consoleHandler)
+
+
+    def addFileHandler(self, name, logger, formatter):
+        file_name = os.path.join(self.config.get(self.FILESYS, self.LOGGING_DIR), '%s.log' % name)
+        fileHandler = logging.FileHandler(file_name)
+        fileHandler.setFormatter(formatter)
+        fileHandler.setLevel(self.getLoggerLevel())
+        logger.addHandler(fileHandler)
+    
     def get(self):
         return self._logger

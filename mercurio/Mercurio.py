@@ -7,11 +7,19 @@ from serial import Serial, serialutil
 
 class Mercurio():
     
+    TARGET = 'target'
+    TEMPERATURE = 'temperature'
+    BUTTON = 'button'
+    CHAINED_TOUCHES = 'chainedtouches'
+    
+    LISTEN_TARGETS = [TARGET, TEMPERATURE, BUTTON, CHAINED_TOUCHES]
+    
+    
     TIMEOUT = 1
     CONFIG_FILE = 'etc/setup.cfg'
      
     def __init__(self):
-        self.log = LoggerFactory("mercurio").get() 
+        self.log = LoggerFactory().get() 
         
     def _dictionareFromReadline(self, line):
         """Creates a dictionary from the raw input from the serial.
@@ -43,40 +51,48 @@ class Mercurio():
         return command.split(' ')
     
     
-    def listen(self):
-        configuration = ConfigurationResolver(self.CONFIG_FILE)
-        port = configuration.get('general','port')
-        if port is None:
-            self.log.critical('ERROR: port missing in ``mercurio.cfg`` file. '
-                             'Try running ``python -m serial.tools.list_ports``'
-                             ' to figure out the port of the device.')
-            exit(2)
-        
+
+    def _connectToDevice(self, port):
         try:
             serial = Serial(port, 9600, timeout=self.TIMEOUT)
         except serialutil.SerialException:
-            self.log.critical('ERROR: Mercurio device '
-                             'not connected nor detected.')
+            self.log.critical('ERROR: Mercurio device not connected nor detected.')
             exit(1)
         self.log.info('Mercurio is listening on %s.' % serial.portstr)
+        return serial
+
+
+    def _checkPort(self, port):
+        if port is None:
+            self.log.critical('ERROR: port missing in ``%s`` file. '
+                'Try running ``python -m serial.tools.list_ports``'
+                ' to figure out the port of the device.' % self.CONFIG_FILE)
+            exit(2)
+
+
+    def runCommand(self, command):
+        command_args = self._prepareCommand(command)
+        self.log.info(command)
+        # ``subprocess.call`` will wait for the command to complete.
+        # no need of blocking the next execution since
+        # it won't be available until this is completed
+        subprocess.call(command_args)
+        self.log.info("Mercurio sucessfuly delivered on %s." % datetime.now())
+
+    def listen(self):
+        configuration = ConfigurationResolver(self.CONFIG_FILE)
+        port = configuration.get('general','port')
+        self._checkPort(port)
+        serial = self._connectToDevice(port)
         targets = configuration.listItems('targets')
         while True:
             data = self._dictionareFromReadline(serial.readline())
-            if not 'target' in data:
-                # Ignore any other output that doesn't have a target
+            if not self.TARGET in data:
+                self.log.debug("Ignore recieved data %s any other output that doesn't have a target" % data)
                 continue
             destination = data['target'].lower().rstrip()
             if not destination in targets:
                 # Inform that we received an unknown target
                 self.log.warn("Target %s not found" % destination)
-            self.log.info("Instructions received.")
-            
-            command_args = self._prepareCommand(targets[destination])
-            self.log.info("Mercurio delivering to target: %s" % destination.title())
-            self.log.info(targets[destination])
-            # ``subprocess.call`` will wait for the command to complete.
-            # no need of blocking the next execution since
-            # it won't be available until this is completed
-            subprocess.call(command_args)
-            
-            self.log.info("Mercurio sucessfuly delivered on %s." % datetime.now())
+            self.log.info("Instructions received: %s" % destination) 
+            self.runCommand(targets[destination])
